@@ -5,6 +5,10 @@ import appeng.api.config.AccessRestriction;
 import appeng.client.gui.widgets.GuiTabButton;
 import appeng.client.gui.widgets.ITooltip;
 import appeng.core.localization.GuiText;
+import codechicken.nei.VisiblityData;
+import codechicken.nei.api.INEIGuiHandler;
+import codechicken.nei.api.TaggedInventoryArea;
+import cpw.mods.fml.common.Optional;
 import extracells.container.ContainerBusFluidStorage;
 import extracells.gui.widget.WidgetStorageDirection;
 import extracells.gui.widget.fluid.WidgetFluidSlot;
@@ -18,6 +22,7 @@ import extracells.util.FluidUtil;
 import extracells.util.GuiUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
@@ -29,10 +34,12 @@ import net.minecraftforge.fluids.FluidStack;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import java.util.Collections;
 import java.util.List;
 
+@Optional.Interface(modid = "NotEnoughItems", iface = "codechicken.nei.api.INEIGuiHandler")
 public class GuiBusFluidStorage extends ECGuiContainer implements
-		WidgetFluidSlot.IConfigurable, IFluidSlotGui {
+		WidgetFluidSlot.IConfigurable, IFluidSlotGui, INEIGuiHandler {
 
 	private static final ResourceLocation guiTexture = new ResourceLocation("extracells", "textures/gui/storagebusfluid.png");
 	private final EntityPlayer player;
@@ -328,5 +335,43 @@ public class GuiBusFluidStorage extends ECGuiContainer implements
 		for (int i = 0; i < this.fluidSlotList.size() && i < fluidList.size(); i++) {
 			this.fluidSlotList.get(i).setFluid(fluidList.get(i));
 		}
+	}
+
+	@Override
+	public VisiblityData modifyVisiblity(GuiContainer guiContainer, VisiblityData visiblityData) {
+		return visiblityData;
+	}
+
+	@Override
+	public Iterable<Integer> getItemSpawnSlots(GuiContainer guiContainer, ItemStack itemStack) {
+		return Collections.emptyList();
+	}
+
+	@Override
+	public List<TaggedInventoryArea> getInventoryAreas(GuiContainer guiContainer) {
+		return null;
+	}
+
+	@Override
+	public boolean handleDragNDrop(GuiContainer gui, int mouseX, int mouseY, ItemStack draggedStack, int button) {
+		if (!(gui instanceof GuiBusFluidStorage) || draggedStack == null) {
+			return false;
+		}
+		for (WidgetFluidSlot fluidSlot : this.fluidSlotList) {
+			if (GuiUtil.isPointInRegion(this.guiLeft, this.guiTop, fluidSlot.getPosX(), fluidSlot.getPosY(), 18, 18, mouseX, mouseY)) {
+				if(part instanceof PartGasStorage && Integration.Mods.MEKANISMGAS.isEnabled())
+					fluidSlot.mouseNEIClickedGas(draggedStack);
+				else
+					fluidSlot.mouseNEIClicked(draggedStack);
+				break;
+			}
+		}
+		draggedStack.stackSize = 0;
+		return true;
+	}
+
+	@Override
+	public boolean hideItemPanelSlot(GuiContainer gui, int x, int y, int w, int h) {
+		return false;
 	}
 }
