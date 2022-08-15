@@ -27,6 +27,21 @@ shaped=
 	ec:cell4096kPart logProcessor ec:cell4096kPart,
 	dustGlowstone ec:cell4096kPart dustGlowstone
 	-> ec:cell16384kPart
+shaped=
+	dustGlowstone engProcessor dustGlowstone,
+	ec:cell16384kPart logProcessor ec:cell16384kPart,
+	dustGlowstone ec:cell16384kPart dustGlowstone
+	-> ec:cell65536kPart
+shaped=
+	dustGlowstone engProcessor dustGlowstone,
+	ec:cell65536kPart logProcessor ec:cell65536kPart,
+	dustGlowstone ec:cell65536kPart dustGlowstone
+	-> ec:cell262144kPart
+shaped=
+	dustGlowstone engProcessor dustGlowstone,
+	ec:cell262144kPart logProcessor ec:cell262144kPart,
+	dustGlowstone ec:cell262144kPart dustGlowstone
+	-> ec:cell1048576kPart
 
 shaped=
 	lapis certusCrystal lapis,

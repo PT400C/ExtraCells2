@@ -62,4 +62,19 @@ public class BlockDefinition implements IBlockDefinition {
         return new BlockItemDefinitions(BlockEnum.CRAFTINGSTORAGE.getBlock(), 3,
                 TileEntityCraftingStorage.class);
     }
+	@Override
+	public ITileDefinition craftingStorage65536k() {
+		return new BlockItemDefinitions(BlockEnum.CRAFTINGSTORAGE.getBlock(), 5,
+			TileEntityCraftingStorage.class);
+	}
+	@Override
+	public ITileDefinition craftingStorage262144k() {
+		return new BlockItemDefinitions(BlockEnum.CRAFTINGSTORAGE.getBlock(), 5,
+			TileEntityCraftingStorage.class);
+	}
+	@Override
+	public ITileDefinition craftingStorage1048576k() {
+		return new BlockItemDefinitions(BlockEnum.CRAFTINGSTORAGE.getBlock(), 6,
+			TileEntityCraftingStorage.class);
+	}
 }

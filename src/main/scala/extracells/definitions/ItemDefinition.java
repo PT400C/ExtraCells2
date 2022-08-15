@@ -21,6 +21,18 @@ public class ItemDefinition implements IItemDefinition {
 	public appeng.api.definitions.IItemDefinition cell16384kPart() {
 		return new ItemItemDefinitions(ItemEnum.STORAGECOMPONENT.getItem(), 3);
 	}
+	@Override
+	public appeng.api.definitions.IItemDefinition cell65536kPart() {
+		return new ItemItemDefinitions(ItemEnum.STORAGECOMPONENT.getItem(), 4);
+	}
+	@Override
+	public appeng.api.definitions.IItemDefinition cell262144kPart() {
+		return new ItemItemDefinitions(ItemEnum.STORAGECOMPONENT.getItem(), 5);
+	}
+	@Override
+	public appeng.api.definitions.IItemDefinition cell1048576kPart() {
+		return new ItemItemDefinitions(ItemEnum.STORAGECOMPONENT.getItem(), 6);
+	}
 
 	@Override
 	public appeng.api.definitions.IItemDefinition cell16kPartFluid() {
@@ -125,6 +137,18 @@ public class ItemDefinition implements IItemDefinition {
 	@Override
 	public appeng.api.definitions.IItemDefinition physCell16384k() {
 		return new ItemItemDefinitions(ItemEnum.PHYSICALSTORAGE.getItem(), 3);
+	}
+	@Override
+	public appeng.api.definitions.IItemDefinition physCell65536k() {
+		return new ItemItemDefinitions(ItemEnum.PHYSICALSTORAGE.getItem(), 4);
+	}
+	@Override
+	public appeng.api.definitions.IItemDefinition physCell262144k() {
+		return new ItemItemDefinitions(ItemEnum.PHYSICALSTORAGE.getItem(), 5);
+	}
+	@Override
+	public appeng.api.definitions.IItemDefinition physCell1048576k() {
+		return new ItemItemDefinitions(ItemEnum.PHYSICALSTORAGE.getItem(), 6);
 	}
 
 	// Physical Cells

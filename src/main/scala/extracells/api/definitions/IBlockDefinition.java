@@ -21,4 +21,8 @@ public interface IBlockDefinition {
     ITileDefinition craftingStorage4096k();
 
     ITileDefinition craftingStorage16384k();
+	ITileDefinition craftingStorage65536k();
+	ITileDefinition craftingStorage262144k();
+
+	ITileDefinition craftingStorage1048576k();
 }

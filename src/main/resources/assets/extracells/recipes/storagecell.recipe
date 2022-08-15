@@ -32,6 +32,15 @@ shapeless=
 shapeless=
 	ec:physCasing ec:cell16384kPart
 	-> ec:physCell16384k
+shapeless=
+	ec:physCasing ec:cell65536kPart
+	-> ec:physCell65536k
+shapeless=
+	ec:physCasing ec:cell262144kPart
+	-> ec:physCell262144k
+shapeless=
+	ec:physCasing ec:cell1048576kPart
+	-> ec:physCell1048576k
 
 shaped=
     ae2:BlockQuartzGlass oredictionary:dustFluix ae2:BlockQuartzGlass,
@@ -53,7 +62,21 @@ shaped=
     oredictionary:dustFluix  ec:cell16384kPart oredictionary:dustFluix,
     oredictionary:gemDiamond oredictionary:gemDiamond oredictionary:gemDiamond
     -> ec:physCell16384k
-
+shaped=
+    ae2:BlockQuartzGlass oredictionary:dustFluix ae2:BlockQuartzGlass,
+    oredictionary:dustFluix  ec:cell65536kPart oredictionary:dustFluix,
+    oredictionary:gemDiamond oredictionary:gemDiamond oredictionary:gemDiamond
+    -> ec:physCell65536k
+shaped=
+    ae2:BlockQuartzGlass oredictionary:dustFluix ae2:BlockQuartzGlass,
+    oredictionary:dustFluix  ec:cell262144kPart oredictionary:dustFluix,
+    oredictionary:gemDiamond oredictionary:gemDiamond oredictionary:gemDiamond
+    -> ec:physCell262144k
+shaped=
+    ae2:BlockQuartzGlass oredictionary:dustFluix ae2:BlockQuartzGlass,
+    oredictionary:dustFluix  ec:cell1048576kPart oredictionary:dustFluix,
+    oredictionary:gemDiamond oredictionary:gemDiamond oredictionary:gemDiamond
+    -> ec:physCell1048576k
 
 shapeless=
 	ec:fluidCasing ec:cell1kPartFluid
@@ -94,6 +117,15 @@ shapeless=
 	ae2:BlockCraftingUnit:0 ec:physCell16384k
 	-> ec:craftingStorage16384k
 
+ shapeless=
+	ae2:BlockCraftingUnit:0 ec:physCell65536k
+	-> ec:craftingStorage65536k
+ shapeless=
+	ae2:BlockCraftingUnit:0 ec:physCell262144k
+	-> ec:craftingStorage262144k
+ shapeless=
+	ae2:BlockCraftingUnit:0 ec:physCell1048576k
+	-> ec:craftingStorage1048576k
 
 shaped=
 	ae2:BlockQuartzGlass oredictionary:dustFluix ae2:BlockQuartzGlass,

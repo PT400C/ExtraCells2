@@ -58,8 +58,14 @@ public class NameHandler implements ISubItemResolver {
 			return new ResolverResult(ItemEnum.PHYSICALSTORAGE.getInternalName(), 2);
 		if (fullName.equals("physCell16384k"))
 			return new ResolverResult(ItemEnum.PHYSICALSTORAGE.getInternalName(), 3);
-		if (fullName.equals("physCellContainer"))
+		if (fullName.equals("physCell65536k"))
 			return new ResolverResult(ItemEnum.PHYSICALSTORAGE.getInternalName(), 4);
+		if (fullName.equals("physCell262144k"))
+			return new ResolverResult(ItemEnum.PHYSICALSTORAGE.getInternalName(), 5);
+		if (fullName.equals("physCell1048576k"))
+			return new ResolverResult(ItemEnum.PHYSICALSTORAGE.getInternalName(), 6);
+		if (fullName.equals("physCellContainer"))
+			return new ResolverResult(ItemEnum.PHYSICALSTORAGE.getInternalName(), 7);
 
 		// Fluid Storage Components
 		if (fullName.equals("cell1kPartFluid"))
@@ -102,7 +108,12 @@ public class NameHandler implements ISubItemResolver {
 			return new ResolverResult(ItemEnum.STORAGECOMPONENT.getInternalName(), 2);
 		if (fullName.equals("cell16384kPart"))
 			return new ResolverResult(ItemEnum.STORAGECOMPONENT.getInternalName(), 3);
-
+		if (fullName.equals("cell65536kPart"))
+			return new ResolverResult(ItemEnum.STORAGECOMPONENT.getInternalName(), 4);
+		if (fullName.equals("cell262144kPart"))
+			return new ResolverResult(ItemEnum.STORAGECOMPONENT.getInternalName(), 5);
+		if (fullName.equals("cell1048576kPart"))
+			return new ResolverResult(ItemEnum.STORAGECOMPONENT.getInternalName(), 6);
 		// Physical Storage Casing
 		if (fullName.equals("physCasing"))
 			return new ResolverResult(ItemEnum.STORAGECASING.getInternalName(), 0);
@@ -190,7 +201,12 @@ public class NameHandler implements ISubItemResolver {
 			return new ResolverResult(BlockEnum.CRAFTINGSTORAGE.getInternalName(), 2);
 		if (fullName.equals("craftingStorage16384k"))
 			return new ResolverResult(BlockEnum.CRAFTINGSTORAGE.getInternalName(), 3);
-
+		if (fullName.equals("craftingStorage65536k"))
+			return new ResolverResult(BlockEnum.CRAFTINGSTORAGE.getInternalName(), 4);
+		if (fullName.equals("craftingStorage262144k"))
+			return new ResolverResult(BlockEnum.CRAFTINGSTORAGE.getInternalName(), 5);
+		if (fullName.equals("craftingStorage1048576k"))
+			return new ResolverResult(BlockEnum.CRAFTINGSTORAGE.getInternalName(), 6);
 		return null;
 	}
 }

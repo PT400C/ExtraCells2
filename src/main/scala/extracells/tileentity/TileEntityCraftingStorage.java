@@ -19,6 +19,9 @@ public class TileEntityCraftingStorage extends TileCraftingStorageTile {
 			case 1024: return new ItemStack(CRAFTINGSTORAGE.getBlock(), 1, 1);
 			case 4096: return new ItemStack(CRAFTINGSTORAGE.getBlock(), 1, 2);
 			case 16384: return new ItemStack(CRAFTINGSTORAGE.getBlock(), 1, 3);
+			case 65536: return new ItemStack(CRAFTINGSTORAGE.getBlock(), 1, 4);
+			case 262144: return new ItemStack(CRAFTINGSTORAGE.getBlock(), 1, 5);
+			case 1048576: return new ItemStack(CRAFTINGSTORAGE.getBlock(), 1, 6);
 		}
 		return super.getItemFromTile(obj);
 	}
@@ -32,6 +35,9 @@ public class TileEntityCraftingStorage extends TileCraftingStorageTile {
             case 1: return 1024 * KILO_SCALAR;
             case 2: return 4096 * KILO_SCALAR;
             case 3: return 16384 * KILO_SCALAR;
+			case 4: return 65536 * KILO_SCALAR;
+			case 5: return 262144 * KILO_SCALAR;
+			case 6: return 1048576 * KILO_SCALAR;
 			default: return 0;
 		}
 	}

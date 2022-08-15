@@ -27,6 +27,12 @@ public interface IItemDefinition {
 
 	appeng.api.definitions.IItemDefinition cell16384kPart();
 
+	appeng.api.definitions.IItemDefinition cell65536kPart();
+
+	appeng.api.definitions.IItemDefinition cell262144kPart();
+
+	appeng.api.definitions.IItemDefinition cell1048576kPart();
+
 	// Fluid Storage Casing
 	appeng.api.definitions.IItemDefinition fluidCasing();
 
@@ -58,6 +64,12 @@ public interface IItemDefinition {
 	appeng.api.definitions.IItemDefinition physCell4096k();
 
 	appeng.api.definitions.IItemDefinition physCell16384k();
+
+	appeng.api.definitions.IItemDefinition physCell65536k();
+
+	appeng.api.definitions.IItemDefinition physCell262144k();
+
+	appeng.api.definitions.IItemDefinition physCell1048576k();
 
 	appeng.api.definitions.IItemDefinition physCellContainer();
 
