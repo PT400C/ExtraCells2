@@ -36,6 +36,7 @@ public class GuiGasTerminal extends GuiContainer implements IFluidSelectorGui {
 	private ResourceLocation guiTexture = new ResourceLocation("extracells", "textures/gui/terminalfluid.png");
 	public IAEFluidStack currentFluid;
 	private ContainerGasTerminal containerTerminalFluid;
+	private int deltaWheel = 0;
 
 	public GuiGasTerminal(PartGasTerminal _terminal, EntityPlayer _player) {
 		super(new ContainerGasTerminal(_terminal, _player));
@@ -74,16 +75,28 @@ public class GuiGasTerminal extends GuiContainer implements IFluidSelectorGui {
 			}
 
 			this.fontRendererObj.drawString(
-					StatCollector.translateToLocal("extracells.tooltip.amount") + ": " + amountToText, 45, 91, 0x000000);
+				StatCollector.translateToLocal("extracells.tooltip.amount") + ": " + amountToText, 45, 91, 0x000000);
 			this.fontRendererObj.drawString(
-					StatCollector.translateToLocal("extracells.tooltip.fluid") + ": " + this.currentFluid.getFluid().getLocalizedName(this.currentFluid.getFluidStack()), 45, 101, 0x000000);
+				StatCollector.translateToLocal("extracells.tooltip.fluid") + ": " + this.currentFluid.getFluid().getLocalizedName(this.currentFluid.getFluidStack()), 45, 101, 0x000000);
+		}
+	}
+
+	@Override
+	public void handleMouseInput() {
+		super.handleMouseInput();
+		deltaWheel = Mouse.getEventDWheel();
+		if (deltaWheel < 0) {
+			currentScroll++;
+		} else if (deltaWheel > 0) {
+			currentScroll--;
 		}
 	}
 
 	public void drawWidgets(int mouseX, int mouseY) {
 		int listSize = this.fluidWidgets.size();
 		if (!this.containerTerminalFluid.getFluidStackList().isEmpty()) {
-			outerLoop: for (int y = 0; y < 4; y++) {
+			outerLoop:
+			for (int y = 0; y < 4; y++) {
 				for (int x = 0; x < 9; x++) {
 					int widgetIndex = y * 9 + x + this.currentScroll * 9;
 					if (0 <= widgetIndex && widgetIndex < listSize) {
@@ -106,14 +119,6 @@ public class GuiGasTerminal extends GuiContainer implements IFluidSelectorGui {
 					}
 				}
 			}
-
-			int deltaWheel = Mouse.getDWheel();
-			if (deltaWheel > 0) {
-				this.currentScroll++;
-			} else if (deltaWheel < 0) {
-				this.currentScroll--;
-			}
-
 			if (this.currentScroll < 0)
 				this.currentScroll = 0;
 			if (listSize / 9 < 4 && this.currentScroll < listSize / 9 + 4)
@@ -148,7 +153,6 @@ public class GuiGasTerminal extends GuiContainer implements IFluidSelectorGui {
 	@Override
 	public void initGui() {
 		super.initGui();
-		Mouse.getDWheel();
 
 		updateFluids();
 		Collections.sort(this.fluidWidgets, new FluidWidgetComparator());

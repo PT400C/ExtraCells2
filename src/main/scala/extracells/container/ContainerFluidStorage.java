@@ -9,6 +9,7 @@ import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.IMEMonitorHandlerReceiver;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IItemList;
+import extracells.api.ECApi;
 import extracells.api.IPortableFluidStorageCell;
 import extracells.api.IWirelessFluidTermHandler;
 import extracells.container.slot.SlotPlayerInventory;
@@ -30,9 +31,12 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import org.apache.commons.lang3.tuple.MutablePair;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+
 public class ContainerFluidStorage extends Container implements
-		IMEMonitorHandlerReceiver<IAEFluidStack>, IFluidSelectorContainer,
-		IInventoryUpdateReceiver, IStorageContainer {
+	IMEMonitorHandlerReceiver<IAEFluidStack>, IFluidSelectorContainer,
+	IInventoryUpdateReceiver, IStorageContainer {
 
 	private GuiFluidStorage guiFluidStorage;
 	private IItemList<IAEFluidStack> fluidStackList;
@@ -44,6 +48,8 @@ public class ContainerFluidStorage extends Container implements
 	private IWirelessFluidTermHandler handler = null;
 	private IPortableFluidStorageCell storageCell = null;
 	public boolean hasWirelessTermHandler = false;
+	private Instant LastUpdateTime = Instant.now();
+	private boolean UpdateOnce = true;
 	private ECPrivateInventory inventory = new ECPrivateInventory("extracells.item.fluid.storage", 2, 64, this) {
 
 		@Override
@@ -260,7 +266,7 @@ public class ContainerFluidStorage extends Container implements
 					return false;
 				}
 				this.storageCell.usePower(this.player, 20.0D,
-						this.player.getCurrentEquippedItem());
+					this.player.getCurrentEquippedItem());
 			}
 			this.inventory.incrStackSize(1, itemStack.stackSize);
 			return true;
@@ -268,11 +274,40 @@ public class ContainerFluidStorage extends Container implements
 	}
 
 	public void forceFluidUpdate() {
-		if (this.monitor != null)
+		if (this.monitor != null) {
 			new PacketFluidStorage(this.player, this.monitor.getStorageList())
-					.sendPacketToPlayer(this.player);
-		new PacketFluidStorage(this.player, this.hasWirelessTermHandler)
 				.sendPacketToPlayer(this.player);
+			new PacketFluidStorage(this.player, this.hasWirelessTermHandler)
+				.sendPacketToPlayer(this.player);
+		}
+	}
+
+	public void FluidUpdateOnce() {
+		if (this.monitor != null && this.UpdateOnce) {
+			new PacketFluidStorage(this.player, this.monitor.getStorageList())
+				.sendPacketToPlayer(this.player);
+			new PacketFluidStorage(this.player, this.hasWirelessTermHandler)
+				.sendPacketToPlayer(this.player);
+			this.UpdateOnce = false;
+		}
+	}
+
+	public void forceFluidUpdate(String text) {
+		if (this.monitor != null) {
+			IItemList<IAEFluidStack> fluidStackList = AEApi.instance()
+				.storage().createFluidList();
+			for (IAEFluidStack fluidStack : this.monitor.getStorageList()) {
+				if (fluidStack.getFluid().getLocalizedName(fluidStack.getFluidStack()).toLowerCase().contains(text.toLowerCase()) && ECApi.instance().canFluidSeeInTerminal(
+					fluidStack.getFluid())) {
+					fluidStackList.add(fluidStack);
+				}
+			}
+			new PacketFluidStorage(this.player, fluidStackList)
+				.sendPacketToPlayer(this.player);
+			new PacketFluidStorage(this.player, this.hasWirelessTermHandler)
+				.sendPacketToPlayer(this.player);
+		}
+
 	}
 
 	public IItemList<IAEFluidStack> getFluidStackList() {
@@ -321,9 +356,17 @@ public class ContainerFluidStorage extends Container implements
 
 	@Override
 	public void postChange(IBaseMonitor<IAEFluidStack> monitor, Iterable<IAEFluidStack> change, BaseActionSource actionSource) {
-		this.fluidStackList = ((IMEMonitor<IAEFluidStack>) monitor).getStorageList();
-		new PacketFluidStorage(this.player, this.fluidStackList).sendPacketToPlayer(this.player);
-		new PacketFluidStorage(this.player, this.hasWirelessTermHandler).sendPacketToPlayer(this.player);
+		if (Instant.now().compareTo(this.LastUpdateTime.plus(250, ChronoUnit.MILLIS)) > 0) {
+			this.fluidStackList = ((IMEMonitor<IAEFluidStack>) monitor)
+				.getStorageList();
+			new PacketFluidStorage(this.player, this.fluidStackList)
+				.sendPacketToPlayer(this.player);
+			new PacketFluidStorage(this.player, this.hasWirelessTermHandler).sendPacketToPlayer(this.player);
+			this.LastUpdateTime = Instant.now();
+		}
+//		this.fluidStackList = ((IMEMonitor<IAEFluidStack>) monitor).getStorageList();
+//		new PacketFluidStorage(this.player, this.fluidStackList).sendPacketToPlayer(this.player);
+//		new PacketFluidStorage(this.player, this.hasWirelessTermHandler).sendPacketToPlayer(this.player);
 	}
 
 	public void receiveSelectedFluid(Fluid _selectedFluid) {
