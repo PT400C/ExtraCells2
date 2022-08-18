@@ -1,5 +1,6 @@
 package extracells.gui;
 
+import appeng.util.item.AEItemStack;
 import cpw.mods.fml.relauncher.Side;
 import extracells.container.ContainerOreDictExport;
 import extracells.network.packet.part.PacketOreDictExport;
@@ -10,13 +11,21 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
+
+import java.util.*;
+
 
 public class GuiOreDictExport extends GuiContainer {
 
+	public ContainerOreDictExport _containerOreDictExport;
+	private int currentScroll = 0;
+	private int deltaWheel = 0;
 	public static void updateFilter(String _filter) {
 		if (filter != null) {
 			filter = _filter;
@@ -38,37 +47,109 @@ public class GuiOreDictExport extends GuiContainer {
 
 	public GuiOreDictExport(EntityPlayer player, PartOreDictExporter _part) {
 		super(new ContainerOreDictExport(player, _part));
+		this._containerOreDictExport = new ContainerOreDictExport(player, _part);
 		this.player = player;
 	}
 
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
 		new PacketOreDictExport(this.player, filter, Side.SERVER)
-				.sendPacketToServer();
+			.sendPacketToServer();
 	}
 
 	@Override
-	protected void drawGuiContainerBackgroundLayer(float f, int mouseX,
-			int mouseY) {
+	public void handleMouseInput() {
+		super.handleMouseInput();
+		deltaWheel = Mouse.getEventDWheel();
+		if (deltaWheel < 0) {
+			currentScroll++;
+		} else if (deltaWheel > 0) {
+			currentScroll--;
+		}
+	}
+	@Override
+	protected void drawGuiContainerBackgroundLayer(float f, int mouseX, int mouseY) {
 		drawDefaultBackground();
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		Minecraft.getMinecraft().renderEngine.bindTexture(this.guiTexture);
 		drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize,
-				this.ySize);
+			this.ySize);
 		this.searchbar.drawTextBox();
 	}
 
+	public class RenderToolTip {
+		private ItemStack item;
+		private int x;
+		private int y;
+		private boolean render = false;
+
+		public RenderToolTip() {
+		}
+
+		public void setValue(ItemStack _item, int _x, int _y) {
+			this.item = _item;
+			this.x = _x;
+			this.y = _y;
+			this.render = true;
+		}
+
+		public void renderToolTip() {
+			if (render) {
+				GuiOreDictExport.this.renderToolTip(this.item, this.x, this.y);
+				this.render = false;
+			}
+
+		}
+
+	}
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
 		super.drawGuiContainerForegroundLayer(mouseX, mouseY);
-		this.fontRendererObj.drawString(
+		if (!Objects.equals(filter, "")) {
+			this.fontRendererObj.drawString(
 				StatCollector.translateToLocal(
-						"extracells.part.oredict.export.name").replace("ME ",
-						""), 8, 5, 0x000000);
-		this.fontRendererObj.drawString(
+					"extracells.part.oredict.export.name").replace("ME ",
+					""), 8, 5, 0x000000);
+			this.fontRendererObj.drawString(
 				StatCollector.translateToLocal("container.inventory"), 8,
 				this.ySize - 94, 0x000000);
+			this._containerOreDictExport.part.setFilter(filter, false);
+			Iterator<AEItemStack> items = this._containerOreDictExport.part.getOres().iterator();
+			int size = this._containerOreDictExport.part.getOres().size();
 
+			if (this.currentScroll < 0)
+				this.currentScroll = 0;
+			int maxPage = size / (4 * 10);
+			if (this.currentScroll > maxPage) {
+				this.currentScroll = maxPage;
+			}
+			for (int i = 0; i < 10 * 4 * currentScroll; i++) {
+				if (items.hasNext()) {
+					items.next();
+				} else {
+					break;
+				}
+			}
+			RenderToolTip toolTip = new RenderToolTip();
+			outerLoop:
+			for (int y = 0; y < 10; y++) {
+				for (int x = 0; x < 4; x++) {
+					if (items.hasNext()) {
+						AEItemStack item = items.next();
+						item.getItem().addInformation(item.getItemStack(), player, item.getToolTip(), true);
+						int posX = -70 + x * 16;
+						int posY = y * 16;
+						itemRender.renderItemAndEffectIntoGUI(this.fontRendererObj, Minecraft.getMinecraft().renderEngine, item.getItemStack(), posX, posY);
+						if (mouseX - this.guiLeft > posX && mouseX - this.guiLeft < posX + 16 && mouseY - this.guiTop > posY && mouseY - this.guiTop < posY + 16) {
+							toolTip.setValue(item.getItemStack(), posX, posY);
+						}
+					} else {
+						break outerLoop;
+					}
+				}
+			}
+			toolTip.renderToolTip();
+		}
 	}
 
 	@Override
@@ -86,6 +167,7 @@ public class GuiOreDictExport extends GuiContainer {
 			private int yPos = 0;
 			private int width = 0;
 			private int height = 0;
+
 
 			@Override
 			public void mouseClicked(int x, int y, int mouseBtn) {

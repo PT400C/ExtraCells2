@@ -1,7 +1,6 @@
 package extracells.gui;
 
 import appeng.api.storage.data.IAEFluidStack;
-import extracells.Extracells;
 import extracells.api.ECApi;
 import extracells.container.ContainerFluidTerminal;
 import extracells.gui.widget.FluidWidgetComparator;
@@ -25,6 +24,7 @@ import org.lwjgl.opengl.GL11;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class GuiFluidTerminal extends GuiContainer implements IFluidSelectorGui {
 
@@ -36,6 +36,7 @@ public class GuiFluidTerminal extends GuiContainer implements IFluidSelectorGui 
 	private ResourceLocation guiTexture = new ResourceLocation("extracells", "textures/gui/terminalfluid.png");
 	public IAEFluidStack currentFluid;
 	private ContainerFluidTerminal containerTerminalFluid;
+	private int deltaWheel = 0;
 
 	public GuiFluidTerminal(PartFluidTerminal _terminal, EntityPlayer _player) {
 		super(new ContainerFluidTerminal(_terminal, _player));
@@ -99,13 +100,6 @@ public class GuiFluidTerminal extends GuiContainer implements IFluidSelectorGui 
 				}
 			}
 
-			int deltaWheel = Mouse.getDWheel();
-			if (deltaWheel > 0) {
-				this.currentScroll--;
-			} else if (deltaWheel < 0) {
-				this.currentScroll++;
-			}
-
 			if (this.currentScroll < 0)
 				this.currentScroll = 0;
             int maxLine = listSize % 9 == 0 ? listSize / 9 : listSize / 9 + 1;
@@ -140,14 +134,23 @@ public class GuiFluidTerminal extends GuiContainer implements IFluidSelectorGui 
 	}
 
 	@Override
+	public void handleMouseInput() {
+		super.handleMouseInput();
+		deltaWheel = Mouse.getEventDWheel();
+		if (deltaWheel < 0) {
+			currentScroll++;
+		} else if (deltaWheel > 0) {
+			currentScroll--;
+		}
+	}
+	@Override
 	public void initGui() {
 		super.initGui();
-		Mouse.getDWheel();
 
 		updateFluids();
 		Collections.sort(this.fluidWidgets, new FluidWidgetComparator());
 		this.searchbar = new GuiTextField(this.fontRendererObj,
-				this.guiLeft + 81, this.guiTop + 6, 88, 10) {
+			this.guiLeft + 81, this.guiTop + 6, 88, 10) {
 
 			private int xPos = 0;
 			private int yPos = 0;
@@ -164,6 +167,7 @@ public class GuiFluidTerminal extends GuiContainer implements IFluidSelectorGui 
 		this.searchbar.setEnableBackgroundDrawing(false);
 		this.searchbar.setFocused(true);
 		this.searchbar.setMaxStringLength(15);
+		this.searchbar.setText("");
 	}
 
 	@Override
@@ -191,13 +195,20 @@ public class GuiFluidTerminal extends GuiContainer implements IFluidSelectorGui 
 	}
 
 	public void updateFluids() {
+		if (this.searchbar != null && !Objects.equals(this.searchbar.getText(), "")) {
+			this.containerTerminalFluid.forceFluidUpdate(this.searchbar.getText());
+		} else {
+			this.containerTerminalFluid.forceFluidUpdate();
+		}
 		this.fluidWidgets = new ArrayList<AbstractFluidWidget>();
 		for (IAEFluidStack fluidStack : this.containerTerminalFluid.getFluidStackList()) {
 			if (fluidStack.getFluid().getLocalizedName(fluidStack.getFluidStack()).toLowerCase().contains(this.searchbar.getText().toLowerCase()) && ECApi.instance().canFluidSeeInTerminal(
-							fluidStack.getFluid())) {
+				fluidStack.getFluid())) {
 				this.fluidWidgets.add(new WidgetFluidSelector(this, fluidStack));
 			}
 		}
+		Collections.sort(this.fluidWidgets, new FluidWidgetComparator());
+
 		updateSelectedFluid();
 	}
 

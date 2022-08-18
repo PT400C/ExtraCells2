@@ -23,6 +23,7 @@ import org.lwjgl.opengl.GL11;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class GuiFluidStorage extends GuiContainer implements IFluidSelectorGui {
 
@@ -35,6 +36,7 @@ public class GuiFluidStorage extends GuiContainer implements IFluidSelectorGui {
 	public IAEFluidStack currentFluid;
 	private ContainerFluidStorage containerFluidStorage;
 	private final String guiName;
+	private int deltaWheel = 0;
 
 	public GuiFluidStorage(EntityPlayer _player, String _guiName) {
 		super(new ContainerFluidStorage(_player));
@@ -69,26 +71,37 @@ public class GuiFluidStorage extends GuiContainer implements IFluidSelectorGui {
 			String amountToText = FluidUtil.formatFluidAmount(currentFluidAmount, true);
 
 			this.fontRendererObj.drawString(
-					StatCollector.translateToLocal("extracells.tooltip.amount")
-							+ ": " + amountToText, 45, 91, 0x000000);
+				StatCollector.translateToLocal("extracells.tooltip.amount")
+					+ ": " + amountToText, 45, 91, 0x000000);
 			this.fontRendererObj.drawString(
-					StatCollector.translateToLocal("extracells.tooltip.fluid")
-							+ ": "
-							+ this.currentFluid.getFluid().getLocalizedName(
-									this.currentFluid.getFluidStack()), 45, 101,
-					0x000000);
+				StatCollector.translateToLocal("extracells.tooltip.fluid")
+					+ ": "
+					+ this.currentFluid.getFluid().getLocalizedName(
+					this.currentFluid.getFluidStack()), 45, 101,
+				0x000000);
+		}
+	}
+	@Override
+	public void handleMouseInput() {
+		super.handleMouseInput();
+		deltaWheel = Mouse.getEventDWheel();
+		if (deltaWheel < 0) {
+			currentScroll++;
+		} else if (deltaWheel > 0) {
+			currentScroll--;
 		}
 	}
 
 	public void drawWidgets(int mouseX, int mouseY) {
 		int listSize = this.fluidWidgets.size();
 		if (!this.containerFluidStorage.getFluidStackList().isEmpty()) {
-			outerLoop: for (int y = 0; y < 4; y++) {
+			outerLoop:
+			for (int y = 0; y < 4; y++) {
 				for (int x = 0; x < 9; x++) {
 					int widgetIndex = y * 9 + x + this.currentScroll * 9;
 					if (0 <= widgetIndex && widgetIndex < listSize) {
 						AbstractFluidWidget widget = this.fluidWidgets
-								.get(widgetIndex);
+							.get(widgetIndex);
 						widget.drawWidget(x * 18 + 7, y * 18 + 17);
 					} else {
 						break outerLoop;
@@ -107,14 +120,6 @@ public class GuiFluidStorage extends GuiContainer implements IFluidSelectorGui {
 					}
 				}
 			}
-
-			int deltaWheel = Mouse.getDWheel();
-			if (deltaWheel > 0) {
-				this.currentScroll--;
-			} else if (deltaWheel < 0) {
-				this.currentScroll++;
-			}
-
             if (this.currentScroll < 0)
                 this.currentScroll = 0;
             int maxLine = listSize % 9 == 0 ? listSize / 9 : listSize / 9 + 1;
@@ -147,7 +152,6 @@ public class GuiFluidStorage extends GuiContainer implements IFluidSelectorGui {
 	@Override
 	public void initGui() {
 		super.initGui();
-		Mouse.getDWheel();
 
 		updateFluids();
 		Collections.sort(this.fluidWidgets, new FluidWidgetComparator());
@@ -170,6 +174,7 @@ public class GuiFluidStorage extends GuiContainer implements IFluidSelectorGui {
 		this.searchbar.setEnableBackgroundDrawing(false);
 		this.searchbar.setFocused(true);
 		this.searchbar.setMaxStringLength(15);
+		this.searchbar.setText("");
 	}
 
 	@Override
@@ -197,18 +202,19 @@ public class GuiFluidStorage extends GuiContainer implements IFluidSelectorGui {
 	}
 
 	public void updateFluids() {
+		if (this.searchbar != null && !Objects.equals(this.searchbar.getText(), "")) {
+			this.containerFluidStorage.forceFluidUpdate(this.searchbar.getText());
+		} else {
+			this.containerFluidStorage.forceFluidUpdate();
+		}
 		this.fluidWidgets = new ArrayList<AbstractFluidWidget>();
-		for (IAEFluidStack fluidStack : this.containerFluidStorage
-				.getFluidStackList()) {
-			if (fluidStack.getFluid()
-					.getLocalizedName(fluidStack.getFluidStack()).toLowerCase()
-					.contains(this.searchbar.getText().toLowerCase())
-					&& ECApi.instance().canFluidSeeInTerminal(
-							fluidStack.getFluid())) {
-				this.fluidWidgets
-						.add(new WidgetFluidSelector(this, fluidStack));
+		for (IAEFluidStack fluidStack : this.containerFluidStorage.getFluidStackList()) {
+			if (fluidStack.getFluid().getLocalizedName(fluidStack.getFluidStack()).toLowerCase().contains(this.searchbar.getText().toLowerCase()) && ECApi.instance().canFluidSeeInTerminal(
+				fluidStack.getFluid())) {
+				this.fluidWidgets.add(new WidgetFluidSelector(this, fluidStack));
 			}
 		}
+		Collections.sort(this.fluidWidgets, new FluidWidgetComparator());
 		updateSelectedFluid();
 	}
 

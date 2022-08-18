@@ -34,6 +34,7 @@ public class GuiGasStorage extends GuiContainer implements IFluidSelectorGui {
 	public IAEFluidStack currentFluid;
 	private ContainerGasStorage containerGasStorage;
 	private final String guiName;
+	private int deltaWheel = 0;
 
 	public GuiGasStorage(EntityPlayer _player, String _guiName) {
 		super(new ContainerGasStorage(_player));
@@ -47,11 +48,22 @@ public class GuiGasStorage extends GuiContainer implements IFluidSelectorGui {
 	}
 
 	@Override
+	public void handleMouseInput() {
+		super.handleMouseInput();
+		deltaWheel = Mouse.getEventDWheel();
+		if (deltaWheel < 0) {
+			currentScroll++;
+		} else if (deltaWheel > 0) {
+			currentScroll--;
+		}
+	}
+
+	@Override
 	protected void drawGuiContainerBackgroundLayer(float alpha, int sizeX, int sizeY) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		Minecraft.getMinecraft().renderEngine.bindTexture(this.guiTexture);
 		drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize,
-				this.ySize);
+			this.ySize);
 		this.searchbar.drawTextBox();
 		new PacketFluidStorage(this.player).sendPacketToServer();
 	}
@@ -115,14 +127,6 @@ public class GuiGasStorage extends GuiContainer implements IFluidSelectorGui {
 					}
 				}
 			}
-
-			int deltaWheel = Mouse.getDWheel();
-			if (deltaWheel > 0) {
-				this.currentScroll++;
-			} else if (deltaWheel < 0) {
-				this.currentScroll--;
-			}
-
 			if (this.currentScroll < 0)
 				this.currentScroll = 0;
 			if (listSize / 9 < 4 && this.currentScroll < listSize / 9 + 4)
@@ -153,7 +157,6 @@ public class GuiGasStorage extends GuiContainer implements IFluidSelectorGui {
 	@Override
 	public void initGui() {
 		super.initGui();
-		Mouse.getDWheel();
 
 		updateFluids();
 		Collections.sort(this.fluidWidgets, new FluidWidgetComparator());

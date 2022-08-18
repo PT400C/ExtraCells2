@@ -9,6 +9,7 @@ import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.IMEMonitorHandlerReceiver;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IItemList;
+import extracells.api.ECApi;
 import extracells.container.slot.SlotRespective;
 import extracells.gui.GuiFluidTerminal;
 import extracells.gui.widget.fluid.IFluidSelectorContainer;
@@ -24,17 +25,20 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.inventory.SlotFurnace;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 public class ContainerFluidTerminal extends Container implements
-		IMEMonitorHandlerReceiver<IAEFluidStack>, IFluidSelectorContainer {
+	IMEMonitorHandlerReceiver<IAEFluidStack>, IFluidSelectorContainer {
 
 	private PartFluidTerminal terminal;
 	private IMEMonitor<IAEFluidStack> monitor;
 	private IItemList<IAEFluidStack> fluidStackList = AEApi.instance()
-			.storage().createFluidList();
+		.storage().createFluidList();
 	private Fluid selectedFluid;
 	private EntityPlayer player;
 	private GuiFluidTerminal guiFluidTerminal;
+	private Instant LastUpdateTime = Instant.now();
 
 	public ContainerFluidTerminal(PartFluidTerminal _terminal,
 			EntityPlayer _player) {
@@ -78,10 +82,24 @@ public class ContainerFluidTerminal extends Container implements
 		return terminal.isValid();
 	}
 
+	public void forceFluidUpdate(String text) {
+		if (this.monitor != null) {
+			IItemList<IAEFluidStack> fluidStackList = AEApi.instance()
+				.storage().createFluidList();
+			for (IAEFluidStack fluidStack : this.monitor.getStorageList()) {
+				if (fluidStack.getFluid().getLocalizedName(fluidStack.getFluidStack()).toLowerCase().contains(text.toLowerCase()) && ECApi.instance().canFluidSeeInTerminal(
+					fluidStack.getFluid())) {
+					fluidStackList.add(fluidStack);
+				}
+			}
+			new PacketFluidTerminal(this.player, fluidStackList)
+				.sendPacketToPlayer(this.player);
+		}
+	}
 	public void forceFluidUpdate() {
 		if (this.monitor != null) {
 			new PacketFluidTerminal(this.player, this.monitor.getStorageList())
-					.sendPacketToPlayer(this.player);
+				.sendPacketToPlayer(this.player);
 		}
 	}
 
@@ -124,10 +142,13 @@ public class ContainerFluidTerminal extends Container implements
 	@Override
 	public void postChange(IBaseMonitor<IAEFluidStack> monitor,
 			Iterable<IAEFluidStack> change, BaseActionSource actionSource) {
-		this.fluidStackList = ((IMEMonitor<IAEFluidStack>) monitor)
+		if (Instant.now().compareTo(this.LastUpdateTime.plus(250, ChronoUnit.MILLIS)) > 0) {
+			this.fluidStackList = ((IMEMonitor<IAEFluidStack>) monitor)
 				.getStorageList();
-		new PacketFluidTerminal(this.player, this.fluidStackList)
+			new PacketFluidTerminal(this.player, this.fluidStackList)
 				.sendPacketToPlayer(this.player);
+			this.LastUpdateTime = Instant.now();
+		}
 	}
 
 	public void receiveSelectedFluid(Fluid _selectedFluid) {

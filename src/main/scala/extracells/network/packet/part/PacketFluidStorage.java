@@ -67,7 +67,7 @@ public class PacketFluidStorage extends AbstractPacket {
 			if (this.player != null) {
 				if (!this.player.worldObj.isRemote) {
 					if (this.player.openContainer instanceof ContainerFluidStorage) {
-						((ContainerFluidStorage) this.player.openContainer).forceFluidUpdate();
+						((ContainerFluidStorage) this.player.openContainer).FluidUpdateOnce();
 						((ContainerFluidStorage) this.player.openContainer).doWork();
 					}else if (this.player.openContainer instanceof ContainerGasStorage && Integration.Mods.MEKANISMGAS.isEnabled()) {
 						((ContainerGasStorage) this.player.openContainer).forceFluidUpdate();
