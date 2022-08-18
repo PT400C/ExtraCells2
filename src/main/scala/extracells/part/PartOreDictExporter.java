@@ -38,10 +38,8 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.OreDictionary;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -131,11 +129,10 @@ public class PartOreDictExporter extends PartECBase implements IGridTickable {
 			|| filter.contains("]")) {
 			final Predicate<String> test = Pattern.compile(filter).asPredicate();
 			matcher = (is) -> is != null &&
-					IntStream.of(OreDictionary.getOreIDs(is))
-							.mapToObj(OreDictionary::getOreName)
-							.anyMatch(test);
-		}
-		else if (!this.filter.trim().isEmpty()) {
+				IntStream.of(OreDictionary.getOreIDs(is))
+					.mapToObj(OreDictionary::getOreName)
+					.anyMatch(test);
+		} else if (!this.filter.trim().isEmpty()) {
 			String[] filters = this.filter.split("[&|]");
 			String lastFilter = null;
 

@@ -143,7 +143,6 @@ public class GuiFluidTerminal extends GuiContainer implements IFluidSelectorGui 
 			currentScroll--;
 		}
 	}
-
 	@Override
 	public void initGui() {
 		super.initGui();

@@ -272,7 +272,6 @@ public class ContainerFluidStorage extends Container implements
 			return true;
 		}
 	}
-
 	public void forceFluidUpdate() {
 		if (this.monitor != null) {
 			new PacketFluidStorage(this.player, this.monitor.getStorageList())
@@ -309,7 +308,6 @@ public class ContainerFluidStorage extends Container implements
 		}
 
 	}
-
 	public IItemList<IAEFluidStack> getFluidStackList() {
 		return this.fluidStackList;
 	}

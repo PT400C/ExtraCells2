@@ -18,8 +18,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import java.util.Iterator;
-import java.util.Objects;
+import java.util.*;
 
 
 public class GuiOreDictExport extends GuiContainer {
@@ -27,7 +26,6 @@ public class GuiOreDictExport extends GuiContainer {
 	public ContainerOreDictExport _containerOreDictExport;
 	private int currentScroll = 0;
 	private int deltaWheel = 0;
-
 	public static void updateFilter(String _filter) {
 		if (filter != null) {
 			filter = _filter;
@@ -69,7 +67,6 @@ public class GuiOreDictExport extends GuiContainer {
 			currentScroll--;
 		}
 	}
-
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int mouseX, int mouseY) {
 		drawDefaultBackground();
@@ -105,7 +102,6 @@ public class GuiOreDictExport extends GuiContainer {
 		}
 
 	}
-
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
 		super.drawGuiContainerForegroundLayer(mouseX, mouseY);

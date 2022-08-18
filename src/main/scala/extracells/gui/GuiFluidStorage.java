@@ -81,7 +81,6 @@ public class GuiFluidStorage extends GuiContainer implements IFluidSelectorGui {
 				0x000000);
 		}
 	}
-
 	@Override
 	public void handleMouseInput() {
 		super.handleMouseInput();

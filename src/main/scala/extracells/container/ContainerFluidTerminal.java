@@ -25,7 +25,6 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.inventory.SlotFurnace;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
-
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
@@ -97,7 +96,6 @@ public class ContainerFluidTerminal extends Container implements
 				.sendPacketToPlayer(this.player);
 		}
 	}
-
 	public void forceFluidUpdate() {
 		if (this.monitor != null) {
 			new PacketFluidTerminal(this.player, this.monitor.getStorageList())
