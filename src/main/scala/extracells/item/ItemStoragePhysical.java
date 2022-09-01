@@ -46,7 +46,7 @@ public class ItemStoragePhysical extends ItemECBase implements IStorageCell,
 
 	public static final int[] bytes_cell = { 262144, 1048576, 4194304, 16777216, 67108864, 268435456, 1073741824, 1073742000 };
 	public static final double[] idle_drain_cell = { 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 2.0 };
-	public static final int[] types_cell = { 63, 63, 63, 63, 63, 1, 1, 1 };
+	public static final int[] types_cell = { 63, 63, 63, 63, 63, 63, 63, 63 };
 	private IIcon[] icons;
 	private final int MAX_POWER = 32000;
 
