@@ -14,7 +14,7 @@ public final class DeprecationWarning {
     }
 
     public static void addGeneralDeprecationWarning(List<String> tooltip) {
-        tooltip.add(EnumChatFormatting.RED + "EC2 is going to be removed in the future!");
-        tooltip.add(EnumChatFormatting.RED + "Try to put it in crafting table to convert it into AE2/AE2FC device.");
+        //tooltip.add(EnumChatFormatting.RED + "EC2 is going to be removed in the future!");
+        //tooltip.add(EnumChatFormatting.RED + "Try to put it in crafting table to convert it into AE2/AE2FC device.");
     }
 }
